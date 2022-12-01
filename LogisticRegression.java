@@ -1,95 +1,53 @@
 public class LogisticRegression {
-    private double[][] x;
+    private double[] x1;
+    private double[] x2;
     private double[] y;
-    private double[] w;
     private double w0 = 0;
     private double w1 = 0;
     private double w2 = 0;
-    private int n;
+    private double n;
     private double learningRate;
     private int iterations;
     private double sigmoid;
-    private double sumx1;
-    private double sumx2;
-    private double sumy;
 
-    LogisticRegression(double[][] _x, double[] _y, double _learningRate, int _iterations) {
-        this.x = _x;
+    LogisticRegression(double[] _x1, double[] _x2, double[] _y, double _learningRate, int _iterations) {
+        this.x1 = _x1;
+        this.x2 = _x2;
         this.y = _y;
-        this.n = _y.length;
-        w = new double[n];
+        this.n = (double) _y.length;
         this.learningRate = _learningRate;
         this.iterations = _iterations;
-        setSumx1();
-        setSumx2();
-        setSumy();
-    }
-
-    public void setSumx1() {
-        double aux = 0;
-        for (int i = 0; i < n; i++) {
-            aux = aux + x[1][i];
-        }
-        System.out.println(aux);
-        sumx1 = aux;
-    }
-
-    public void setSumx2() {
-        double aux = 0;
-        for (int i = 0; i < n; i++) {
-            aux = aux + x[2][i];
-        }
-        System.out.println(aux);
-        sumx1 = aux;
-    }
-
-    public void setSumy() {
-        double aux = 0;
-        for (int i = 0; i < n; i++) {
-            aux = aux + y[i];
-        }
-        System.out.println(aux);
-        sumy = aux;
-    }
-
-    public double getSumx1() {
-        return sumx1;
-    }
-
-    public double getSumx2() {
-        return sumx2;
-    }
-
-    public double getSumy() {
-        return sumy;
     }
 
     void firstlap() {
+        double aux0 = 0, aux1 = 0, aux2 = 0;
         for (int i = 0; i < n; i++) {
-            w[i] = w[i]
-                    - learningRate * ((y[0] - 0.5) * (x[i][0]) + (y[1] - 0.5) * (x[i][1]) + (y[2] - 0.5) * (x[i][2]));
+            aux0 = aux0 + (w0 + (w1 * x1[i]) + (w2 * x2[i]) - y[i]);
+            aux1 = aux1 + ((w0 + (w1 * x1[i]) + (w2 * x2[i]) - y[i]) * (x1[i]));
+            aux2 = aux2 + ((w0 + (w1 * x1[i]) + (w2 * x2[i]) - y[i]) * (x2[i]));
         }
-        for (int i = 0; i < n; i++) {
-            System.out.println(w[i]);
-        }
-        w0 = w[0];
-        w1 = w[1];
-        w2 = w[2];
-    }
-
-    void gradient() {
+        w0 = w0 - (learningRate * ((1 / n) * (aux0)));
+        w1 = w1 - (learningRate * ((1 / n) * (aux1)));
+        w2 = w2 - (learningRate * ((1 / n) * (aux2)));
+        System.out.println("First Lap");
         System.out.println(w0);
         System.out.println(w1);
         System.out.println(w2);
-        for (int i = 0; i < 10; i++) {
-            System.out.println("Lap: " + (i + 1));
-            w0 = w0 - (learningRate * (getSumy() - (w0 + (w1 * getSumx1()) + (w2 * getSumx2()))));
-            w1 = w1
-                    - (learningRate * (-2 / n) * (getSumx1())
-                            * (getSumy() - (w0 + (w1 * getSumx1()) + (w2 * getSumx2()))));
-            w2 = w2
-                    - (learningRate * (-2 / n) * (getSumx2())
-                            * (getSumy() - (w0 + (w1 * getSumx1()) + (w2 * getSumx2()))));
+    }
+
+    void gradient() {
+        System.out.println("\nGradient");
+        for (int it = 0; it < iterations; it++) {
+            System.out.println("Lap " + (it + 1));
+            double aux0 = 0, aux1 = 0, aux2 = 0;
+            for (int i = 0; i < n; i++) {
+                aux0 = aux0 + (w0 + (w1 * x1[i]) + (w2 * x2[i]) - y[i]);
+                aux1 = aux1 + ((w0 + (w1 * x1[i]) + (w2 * x2[i]) - y[i]) * (x1[i]));
+                aux2 = aux2 + ((w0 + (w1 * x1[i]) + (w2 * x2[i]) - y[i]) * (x2[i]));
+            }
+            w0 = w0 - (learningRate * ((1 / n) * (aux0)));
+            w1 = w1 - (learningRate * ((1 / n) * (aux1)));
+            w2 = w2 - (learningRate * ((1 / n) * (aux2)));
             System.out.println(w0);
             System.out.println(w1);
             System.out.println(w2);
@@ -97,7 +55,7 @@ public class LogisticRegression {
     }
 
     void sigmoid(double nX1, double nX2) {
-        sigmoid = (1) / (1 + Math.pow(Math.E, -(w[0] + (w[1]) * (nX1) + (w[2]) * (nX2))));
+        sigmoid = ((1) / (1 + Math.pow(Math.E, -(w0 + (w1) * (nX1) + (w2) * (nX2)))));
         System.out.println("Sigmoid: " + sigmoid);
     }
 
