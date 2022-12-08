@@ -62,5 +62,4 @@ public class LogisticRegression {
             System.out.println("NOO :(");
         }
     }
-
 }
